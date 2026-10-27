@@ -16,13 +16,13 @@ spring:
       max-file-size: 10MB
       max-request-size: 12MB
   datasource:
-    url: jdbc:mysql://${DB_HOST:${MYSQL_HOST:127.0.0.1}}:${DB_PORT:${MYSQL_PORT:3306}}/${DB_NAME:${MYSQL_DATABASE:interview_simulator}}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
-    username: ${DB_USER:${MYSQL_USER:interview_app}}
-    password: ${DB_PASSWORD:${MYSQL_PASSWORD:interview_secret_2026}}
+    url: "jdbc:mysql://${DB_HOST}:${DB_PORT:4000}/${DB_NAME}?sslMode=VERIFY_IDENTITY&serverTimezone=UTC&characterEncoding=UTF-8"
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      maximum-pool-size: 15
-      minimum-idle: 3
+      maximum-pool-size: 5
+      minimum-idle: 1
       connection-timeout: 20000
   jpa:
     hibernate:
