@@ -1,0 +1,26 @@
+# Environment secrets
+.env
+.env.local
+.env.*.local
+
+# Maven / Java build outputs
+target/
+*.jar
+*.war
+*.ear
+*.class
+*.log
+hs_err_pid*
+
+# Node / Frontend build outputs
+node_modules/
+dist/
+dist-ssr/
+coverage/
+
+# IDE & OS files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

@@ -1,0 +1,13 @@
+# Disposable Sandbox Image for Candidate Java Code Execution
+# Runs as unprivileged user (10001:10001) with no network and strict resource limits
+FROM eclipse-temurin:21-jdk-alpine
+
+RUN addgroup -g 10001 -S sandbox && \
+    adduser -u 10001 -S sandbox -G sandbox && \
+    mkdir -p /workspace && \
+    chown -R 10001:10001 /workspace
+
+WORKDIR /workspace
+USER 10001:10001
+
+CMD ["java", "-version"]

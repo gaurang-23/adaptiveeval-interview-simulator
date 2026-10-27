@@ -1,0 +1,75 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: interview-simulator-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_secret_2026}
+      MYSQL_DATABASE: ${DB_NAME:-interview_simulator}
+      MYSQL_USER: ${DB_USER:-interview_app}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-interview_secret_2026}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  runner-service:
+    build:
+      context: ./runner-service
+      dockerfile: Dockerfile
+    container_name: interview-simulator-runner
+    restart: unless-stopped
+    environment:
+      RUNNER_PORT: 8085
+      RUNNER_ISOLATION_MODE: ${RUNNER_ISOLATION_MODE:-RESTRICTED_LOCAL_SANDBOX}
+      RUNNER_TIMEOUT_MS: ${RUNNER_TIMEOUT_MS:-4000}
+      RUNNER_MAX_MEMORY_MB: ${RUNNER_MAX_MEMORY_MB:-128}
+    ports:
+      - "8085:8085"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: interview-simulator-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      runner-service:
+        condition: service_started
+    environment:
+      SERVER_PORT: 8080
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-interview_simulator}
+      DB_USER: ${DB_USER:-interview_app}
+      DB_PASSWORD: ${DB_PASSWORD:-interview_secret_2026}
+      JWT_SECRET: ${JWT_SECRET:-replace-with-a-minimum-256-bit-secret-key-for-production-jwt-signing}
+      RUNNER_SERVICE_URL: http://runner-service:8085
+      AI_PROVIDER: ${AI_PROVIDER:-openai-compatible}
+      AI_BASE_URL: ${AI_BASE_URL:-https://api.openai.com/v1}
+      AI_MODEL: ${AI_MODEL:-gpt-4o-mini}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_TIMEOUT_MS: ${AI_TIMEOUT_MS:-15000}
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: interview-simulator-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+volumes:
+  mysql_data:
