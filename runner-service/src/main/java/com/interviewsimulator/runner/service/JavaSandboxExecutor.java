@@ -251,6 +251,9 @@ public class JavaSandboxExecutor {
     ExecutionRequest request
   ) throws IOException, InterruptedException {
     String javacBin = resolveJavaTool("javac");
+    log.info("Java home: {}", System.getProperty("java.home"));
+    log.info("Javac path: {}", javacBin);
+    log.info("Javac exists: {}", new File(javacBin).exists());
     String javaBin = resolveJavaTool("java");
 
     ProcessResult compileRes = runProcess(
@@ -267,18 +270,34 @@ public class JavaSandboxExecutor {
       compileTimeoutMs
     );
 
-    log.error("=== JAVA COMPILATION DIAGNOSTICS ===");
-    log.error("javac executable: {}", javacBin);
-    log.error("Working directory: {}", workDir);
-    log.error("Compiler exit code: {}", compileRes.exitCode);
-    log.error("Compiler timed out: {}", compileRes.timedOut);
-    log.error("Compiler output: [{}]", compileRes.output);
-
     if (compileRes.timedOut || compileRes.exitCode != 0) {
+      log.error("========== COMPILATION FAILURE ==========");
+      log.error("Java home: {}", System.getProperty("java.home"));
+      log.error("Java version: {}", System.getProperty("java.version"));
+      log.error("javac executable: {}", javacBin);
+      log.error("Working directory: {}", workDir);
+      log.error("Exit code: {}", compileRes.exitCode);
+      log.error("Timed out: {}", compileRes.timedOut);
+      log.error("Compiler output: [{}]", compileRes.output);
+
+      String compilerMessage = compileRes.output;
+
+      if (compileRes.timedOut) {
+        compilerMessage =
+          "Java compilation timed out after " + compileTimeoutMs + " ms.";
+      } else if (compilerMessage == null || compilerMessage.isBlank()) {
+        compilerMessage =
+          "Compiler exited with code " +
+          compileRes.exitCode +
+          " but produced no diagnostic output. " +
+          "Check javac availability and generated source files.";
+      }
+
       String sanitizedCompiler = sanitizePathReferences(
-        compileRes.output,
+        compilerMessage,
         workDir
       );
+
       return new ExecutionResponse(
         "COMPILATION_ERROR",
         sanitizedCompiler,
