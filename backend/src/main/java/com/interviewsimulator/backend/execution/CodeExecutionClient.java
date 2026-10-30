@@ -33,7 +33,7 @@ public class CodeExecutionClient {
     this.sharedSecret = sharedSecret;
     SimpleClientHttpRequestFactory factory =
       new SimpleClientHttpRequestFactory();
-    factory.setConnectTimeout(Duration.ofMillis(Math.min(3000, timeoutMs)));
+    factory.setConnectTimeout(Duration.ofMillis(10000));
     factory.setReadTimeout(Duration.ofMillis(timeoutMs));
     this.restClient = RestClient.builder()
       .baseUrl(runnerUrl)
