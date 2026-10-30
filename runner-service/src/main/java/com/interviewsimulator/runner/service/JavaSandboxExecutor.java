@@ -38,13 +38,13 @@ public class JavaSandboxExecutor {
   @Value("${runner.docker-image:interview-simulator-sandbox:latest}")
   private String dockerImage;
 
-  @Value("${runner.compile-timeout-ms:8000}")
+  @Value("${runner.compile-timeout-ms:60000}")
   private long compileTimeoutMs;
 
-  @Value("${runner.execution-timeout-ms:5000}")
+  @Value("${runner.execution-timeout-ms:60000}")
   private long executionTimeoutMs;
 
-  @Value("${runner.per-test-timeout-ms:2000}")
+  @Value("${runner.per-test-timeout-ms:30000}")
   private long perTestTimeoutMs;
 
   @Value("${runner.max-output-chars:16384}")
