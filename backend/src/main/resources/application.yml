@@ -46,7 +46,7 @@ app:
   runner:
     url: ${RUNNER_SERVICE_URL:http://127.0.0.1:8085}
     shared-secret: ${RUNNER_SHARED_SECRET:internal-runner-secret-key-2026}
-    timeout-ms: ${RUNNER_TIMEOUT_MS:10000}
+    timeout-ms: ${RUNNER_TIMEOUT_MS:60000}
   ai:
     provider: ${AI_PROVIDER:OPENAI_COMPATIBLE}
     api-key: ${AI_API_KEY:}
